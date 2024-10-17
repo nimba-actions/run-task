@@ -10,6 +10,11 @@ inputs:
   options:
     description: 'Options to pass to the task'
     default: ''
+  debug:
+    description: 'Display debug logs during Flow Execution'
+    required: false
+    default: false
+    type: boolean
 runs:
     using: "composite"
     steps:
@@ -17,5 +22,9 @@ runs:
         env:
           CUMULUSCI_SERVICE_github: '{"username": "${{ github.actor }}", "token": "${{ github.token }}", "email": "cci@github.actions" }'
         run: |
-          cci task run ${{ inputs.task-name }} --org ${{ inputs.org-name }} ${{ inputs.options }} | tee cumulusci.log
+          if ${{ inputs.debug }}; then
+            cci task run ${{ inputs.task-name }} --org ${{ inputs.org-name }} ${{ inputs.options }} --debug | tee cumulusci.log
+          else
+            cci task run ${{ inputs.task-name }} --org ${{ inputs.org-name }} ${{ inputs.options }} | tee cumulusci.log
+          fi
         shell: bash

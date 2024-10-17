@@ -1,6 +1,15 @@
 name: Run Task
 description: 'Execute a named Cumulus task'
 inputs:
+  cumulusci-version:
+    description: 'version of CumulusCI to install'
+    required: false
+  sfdx-version:
+    description: 'version of SFDX to install'
+    required: false
+  dev-hub-auth-url:
+    description: 'SFDX auth URL for the Dev Hub'
+    required: true
   org-name:
     description: 'Name of the scratch org or persistent org config to use'
     required: true

@@ -7,12 +7,6 @@ inputs:
   sfdx-version:
     description: 'version of SFDX to install'
     required: false
-  dev-hub-auth-url:
-    description: 'SFDX auth URL for the Dev Hub'
-    required: false
-  org-name:
-    description: 'Name of the scratch org or persistent org config to use'
-    required: false
   task-name:
     description: 'Name of the Cumulus task to execute'
     required: true
@@ -27,13 +21,19 @@ inputs:
 runs:
     using: "composite"
     steps:
+      - uses: actions/checkout@v3
+      - name: Set Up CumulusCI
+        uses: nimba-actions/setup-cumulus@v1
+        with:
+          cumulusci-version: "${{ inputs.cumulusci-version }}"
+          sfdx-version: "${{ inputs.sfdx-version }}"
       - name: Run Task
         env:
           CUMULUSCI_SERVICE_github: '{"username": "${{ github.actor }}", "token": "${{ github.token }}", "email": "cci@github.actions" }'
         run: |
           if ${{ inputs.debug }}; then
-            cci task run ${{ inputs.task-name }} ${{ inputs.dev-hub-auth-url && format('--org {0}', inputs.org-name) }} ${{ inputs.options }} --debug | tee cumulusci.log
+            cci task run ${{ inputs.task-name }} ${{ inputs.options }} --debug | tee cumulusci.log
           else
-            cci task run ${{ inputs.task-name }} ${{ inputs.dev-hub-auth-url && format('--org {0}', inputs.org-name) }} ${{ inputs.options }} | tee cumulusci.log
+            cci task run ${{ inputs.task-name }} ${{ inputs.options }} | tee cumulusci.log
           fi
         shell: bash

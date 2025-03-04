@@ -9,10 +9,10 @@ inputs:
     required: false
   dev-hub-auth-url:
     description: 'SFDX auth URL for the Dev Hub'
-    required: true
+    required: false
   org-name:
     description: 'Name of the scratch org or persistent org config to use'
-    required: true
+    required: false
   task-name:
     description: 'Name of the Cumulus task to execute'
     required: true
@@ -32,8 +32,8 @@ runs:
           CUMULUSCI_SERVICE_github: '{"username": "${{ github.actor }}", "token": "${{ github.token }}", "email": "cci@github.actions" }'
         run: |
           if ${{ inputs.debug }}; then
-            cci task run ${{ inputs.task-name }} --org ${{ inputs.org-name }} ${{ inputs.options }} --debug | tee cumulusci.log
+            cci task run ${{ inputs.task-name }} ${{ inputs.dev-hub-auth-url && format('--org {0}', inputs.org-name) }} ${{ inputs.options }} --debug | tee cumulusci.log
           else
-            cci task run ${{ inputs.task-name }} --org ${{ inputs.org-name }} ${{ inputs.options }} | tee cumulusci.log
+            cci task run ${{ inputs.task-name }} ${{ inputs.dev-hub-auth-url && format('--org {0}', inputs.org-name) }} ${{ inputs.options }} | tee cumulusci.log
           fi
         shell: bash
